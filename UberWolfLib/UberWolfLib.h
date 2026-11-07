@@ -54,7 +54,7 @@ class UberWolfLib
 		bool override  = false;
 		bool unprotect = false;
 		bool decWolfX  = false;
-		tString outputDir = TEXT("");
+		tString outputDir = {};
 	};
 
 public:

@@ -151,7 +151,7 @@ private:
 	uint32_t m_mode              = -1;
 	CryptModes m_additionalModes = {};
 	std::wstring m_progName;
-	tString m_outputDir = TEXT("");
+	tString m_outputDir = {};
 	bool m_isSubProcess = false;
 	bool m_valid        = false;
 };

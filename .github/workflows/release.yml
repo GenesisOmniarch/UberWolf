@@ -41,7 +41,7 @@ jobs:
         run: |
           $tag = "${{ github.event.inputs.tag }}"
           if ([string]::IsNullOrEmpty($tag) -and "${{ github.ref_type }}" -eq "tag") { $tag = "${{ github.ref_name }}" }
-          if ([string]::IsNullOrEmpty($tag)) { $tag = (Get-Content ".github/release-tag" -Raw).Trim() }
+          if ([string]::IsNullOrEmpty($tag)) { $tag = (Get-Content ".github/release-tag" | Where-Object { $_.Trim() -ne "" -and -not $_.StartsWith("#") } | Select-Object -First 1).Trim() }
           if ([string]::IsNullOrEmpty($tag)) { throw "No release tag specified" }
           "TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
