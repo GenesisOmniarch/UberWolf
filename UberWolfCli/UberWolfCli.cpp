@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	SelfUpdater::SetBaseUrlGitHub(L"Sinflower", L"UberWolf");
+	SelfUpdater::SetBaseUrlGitHub(L"GenesisOmniarch", L"UberWolf");
 
 	CLI::App app{ UWCLI_NAME + " v" + selfUpdater::version::GetVersionInfo() };
 	argv = app.ensure_utf8(argv);

@@ -52,7 +52,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ [[maybe_unused]] HINSTA
 #ifdef _DEBUG
 		selfUpdater::utils::SetupConsole();
 #endif
-		SelfUpdater::SetBaseUrlGitHub(L"Sinflower", L"UberWolf");
+		SelfUpdater::SetBaseUrlGitHub(L"GenesisOmniarch", L"UberWolf");
 
 		std::wstring title = L"UberWolf v" + selfUpdater::version::GetVersionInfo();
 

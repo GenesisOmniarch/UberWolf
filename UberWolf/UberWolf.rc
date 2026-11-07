@@ -190,8 +190,8 @@ IDR_LOCAL_RU            LOCALS                  "lang\\ru.json"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,4,137
- PRODUCTVERSION 0,6,4,137
+ FILEVERSION 0,6,5,137
+ PRODUCTVERSION 0,6,5,137
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -208,12 +208,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Sin Corp."
             VALUE "FileDescription", "UberWolf GUI Application"
-            VALUE "FileVersion", "0.6.4.137"
+            VALUE "FileVersion", "0.6.5.137"
             VALUE "InternalName", "UberWolf.exe"
             VALUE "LegalCopyright", "Copyright (C) 2025 Sinflower"
             VALUE "OriginalFilename", "UberWolf.exe"
             VALUE "ProductName", "UberWolf"
-            VALUE "ProductVersion", "0.6.4.137"
+            VALUE "ProductVersion", "0.6.5.137"
         END
     END
     BLOCK "VarFileInfo"

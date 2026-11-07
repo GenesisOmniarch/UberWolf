@@ -6,6 +6,8 @@
 > **このリポジトリは [Sinflower/UberWolf](https://github.com/Sinflower/UberWolf) のフォークです。**
 > 展開したファイルの**出力先フォルダを指定できる機能**を追加しています（GUI・CLI 両対応）。
 > 出力先を指定しない場合は、従来どおりアーカイブと同じ場所に展開されます。
+>
+> **Download / ダウンロード:** [Releases](https://github.com/GenesisOmniarch/UberWolf/releases/latest)
 
 # UberWolf GUI
  Fully functional, GUI-based Wolf RPG decrypter with support for Wolf RPG Pro.
