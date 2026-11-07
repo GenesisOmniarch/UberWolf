@@ -123,6 +123,15 @@ public:
 		m_mode = -1;
 	}
 
+	// Set the base directory archives are extracted into.
+	// An empty string restores the default behavior (extract next to the archive).
+	void SetOutputDir(const tString& outputDir);
+
+	const tString& GetOutputDir() const
+	{
+		return m_outputDir;
+	}
+
 	static tStrings GetEncryptionsW();
 	static Strings GetEncryptions();
 
@@ -135,10 +144,14 @@ private:
 
 	uint16_t getCryptVersion(const tString& filePath) const;
 
+	// Returns the directory in which the extraction folder for the given archive is created
+	tString getOutputBaseDir(const tString& filePath) const;
+
 private:
 	uint32_t m_mode              = -1;
 	CryptModes m_additionalModes = {};
 	std::wstring m_progName;
+	tString m_outputDir = TEXT("");
 	bool m_isSubProcess = false;
 	bool m_valid        = false;
 };

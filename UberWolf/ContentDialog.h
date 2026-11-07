@@ -259,6 +259,7 @@ private:
 
 		UberWolfLib uwl;
 		uwl.Configure(m_optionsDialog.Overwrite(), m_optionsDialog.Unprotect(), m_optionsDialog.DecWolfX());
+		uwl.SetOutputDir(m_optionsDialog.OutputDir());
 		uwl.InitGame(exePath);
 		std::wstring protKey;
 		UWLExitCode result = uwl.UnpackData();
@@ -333,6 +334,7 @@ private:
 
 		UberWolfLib uwl;
 		uwl.Configure(m_optionsDialog.Overwrite(), m_optionsDialog.Unprotect());
+		uwl.SetOutputDir(m_optionsDialog.OutputDir());
 
 		for (const tString& file : files)
 		{

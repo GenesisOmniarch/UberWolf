@@ -58,5 +58,8 @@
 	"unprot_file_loc": "解除保护的文件已被提取到: {}",
 	"remove_prot": "正在解除文件保护: {} ... ",
 	"calc_prot_key_error_msg": "ERROR: 无法推算保护密钥",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "Decrypt WolfX files",
+	"output_dir_msg": "输出目录：{}",
+	"output_dir_label": "输出文件夹（留空 = 与压缩包相同位置）",
+	"select_output_dir": "选择输出文件夹"
 }

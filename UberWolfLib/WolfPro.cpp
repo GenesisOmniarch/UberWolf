@@ -91,6 +91,7 @@ enum class BasicDataFiles
 
 WolfPro::WolfPro(const tString& dataFolder, const bool& dataInBaseFolder) :
 	m_dataFolder(dataFolder),
+	m_unpackFolder(dataFolder),
 	m_unprotectedFolder(dataFolder + TEXT("/") + ProtKey::UNPROTECTED_FOLDER),
 	m_basicDataFolder(TEXT("")),
 	m_protKeyFile(TEXT("")),
@@ -135,6 +136,15 @@ WolfPro::WolfPro(const tString& dataFolder, const bool& dataInBaseFolder) :
 		m_isWolfPro = true;
 
 	RecheckProtFileState();
+}
+
+void WolfPro::SetUnpackFolder(const tString& unpackFolder)
+{
+	m_unpackFolder      = unpackFolder.empty() ? m_dataFolder : unpackFolder;
+	m_unprotectedFolder = m_unpackFolder + TEXT("/") + ProtKey::UNPROTECTED_FOLDER;
+
+	if (m_isWolfPro)
+		RecheckProtFileState();
 }
 
 Key WolfPro::GetProtectionKey()
@@ -256,10 +266,10 @@ bool WolfPro::DecryptWolfXFiles()
 		return false;
 	}
 
-	tString dataFolder = m_dataFolder;
+	tString dataFolder = m_unpackFolder;
 
 	if (m_dataInBaseFolder)
-		dataFolder = m_dataFolder + TEXT("/") + GetWolfDataFolder();
+		dataFolder = m_unpackFolder + TEXT("/") + GetWolfDataFolder();
 
 	WolfXWrapper wolfXWrapper(dataFolder);
 	return wolfXWrapper.DecryptAll();
@@ -663,7 +673,7 @@ void WolfPro::gameDatUpdateSize(std::vector<uint8_t>& bytes, const uint32_t& old
 
 tString WolfPro::getBasicDataFolder() const
 {
-	tString basicDataFolder = m_dataFolder + TEXT("/");
+	tString basicDataFolder = m_unpackFolder + TEXT("/");
 	if (m_dataInBaseFolder)
 		basicDataFolder += GetWolfDataFolder() + TEXT("/");
 

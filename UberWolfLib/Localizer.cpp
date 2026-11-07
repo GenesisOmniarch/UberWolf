@@ -45,6 +45,7 @@ Localizer::LocMapT Localizer::s_localizationT = {
 	{ "dec_key_search_msg", TEXT("Searching for decryption key ...") },
 	{ "unpacked_msg", TEXT("{} is already unpacked, skipping") },
 	{ "unpacking_msg", TEXT("Unpacking: {} ... ") },
+	{ "output_dir_msg", TEXT("Output directory: {}") },
 	{ "done_msg", TEXT("Done") },
 	{ "failed_msg", TEXT("Failed") },
 	{ "pro_game_detected_msg", TEXT("WolfPro game detected, trying to get decryption key ...") },

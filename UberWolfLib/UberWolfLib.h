@@ -54,6 +54,7 @@ class UberWolfLib
 		bool override  = false;
 		bool unprotect = false;
 		bool decWolfX  = false;
+		tString outputDir = TEXT("");
 	};
 
 public:
@@ -70,6 +71,15 @@ public:
 		m_config.override  = override;
 		m_config.unprotect = unprotect;
 		m_config.decWolfX  = decWolfX;
+	}
+
+	// Set the directory archives are extracted into.
+	// An empty string (default) extracts each archive next to the archive itself.
+	void SetOutputDir(const tString& outputDir);
+
+	const tString& GetOutputDir() const
+	{
+		return m_config.outputDir;
 	}
 
 	bool InitGame(const tString& gameExePath);

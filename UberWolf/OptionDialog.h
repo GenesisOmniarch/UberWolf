@@ -26,9 +26,73 @@
 
 #pragma once
 
+#include <ShObjIdl.h>
+#include <string>
+
 #include "Localizer.h"
 #include "WindowBase.h"
 #include "resource.h"
+
+namespace
+{
+// Converts a UTF-8 string to a wide string (used for the config file, which stores UTF-8)
+inline std::wstring Utf8ToWide(const std::string& str)
+{
+	if (str.empty()) return L"";
+	const int size = MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
+	std::wstring wstr(size, L'\0');
+	MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), wstr.data(), size);
+	return wstr;
+}
+
+// Converts a wide string to a UTF-8 string
+inline std::string WideToUtf8(const std::wstring& wstr)
+{
+	if (wstr.empty()) return "";
+	const int size = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
+	std::string str(size, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), str.data(), size, nullptr, nullptr);
+	return str;
+}
+
+// Shows a folder selection dialog, returns true if a folder was selected
+inline bool SelectFolder(HWND hwndParent, const wchar_t* pTitle, std::wstring& folder)
+{
+	const HRESULT hrInit = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+	bool selected        = false;
+
+	IFileOpenDialog* pDialog = nullptr;
+	if (SUCCEEDED(CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pDialog))))
+	{
+		DWORD options = 0;
+		pDialog->GetOptions(&options);
+		pDialog->SetOptions(options | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST);
+		pDialog->SetTitle(pTitle);
+
+		if (SUCCEEDED(pDialog->Show(hwndParent)))
+		{
+			IShellItem* pItem = nullptr;
+			if (SUCCEEDED(pDialog->GetResult(&pItem)))
+			{
+				PWSTR pPath = nullptr;
+				if (SUCCEEDED(pItem->GetDisplayName(SIGDN_FILESYSPATH, &pPath)))
+				{
+					folder   = pPath;
+					selected = true;
+					CoTaskMemFree(pPath);
+				}
+				pItem->Release();
+			}
+		}
+		pDialog->Release();
+	}
+
+	if (SUCCEEDED(hrInit))
+		CoUninitialize();
+
+	return selected;
+}
+} // namespace
 
 class OptionDialog : public WindowBase
 {
@@ -47,6 +111,8 @@ public:
 		registerSlot(IDC_CHECK_OVERWRITE, BN_CLICKED, [this]() { onOverwriteClicked(); });
 		registerSlot(IDC_CHECK_UNPROTECT, BN_CLICKED, [this]() { onUnprotectClicked(); });
 		registerSlot(IDC_CHECK_DEC_WOLFX, BN_CLICKED, [this]() { onDecWolfXClicked(); });
+		registerSlot(IDC_SELECT_OUTPUT_DIR, BN_CLICKED, [this]() { onSelectOutputDirClicked(); });
+		registerSlot(IDC_OUTPUT_DIR, EN_CHANGE, [this]() { onOutputDirChanged(); });
 
 		registerCheckBoxState(IDC_CHECK_OVERWRITE, [this]() { return m_overwrite; });
 		registerCheckBoxState(IDC_CHECK_UNPROTECT, [this]() { return m_unprotect; });
@@ -55,6 +121,7 @@ public:
 		m_overwrite = getSaveValue<bool>(IDC_CHECK_OVERWRITE, false);
 		m_unprotect = getSaveValue<bool>(IDC_CHECK_UNPROTECT, true);
 		m_decWolfX  = getSaveValue<bool>(IDC_CHECK_DEC_WOLFX, false);
+		m_outputDir = Utf8ToWide(getSaveValue<std::string>(IDC_OUTPUT_DIR, ""));
 	}
 
 	~OptionDialog()
@@ -74,6 +141,12 @@ public:
 	const bool& DecWolfX() const
 	{
 		return m_decWolfX;
+	}
+
+	// Output directory for extracted files, empty means next to the archive
+	const std::wstring& OutputDir() const
+	{
+		return m_outputDir;
 	}
 
 	void SetParent(const HWND& hWndParent)
@@ -99,6 +172,7 @@ public:
 		maxWidth = max(maxWidth, adjustCheckBox(IDC_CHECK_OVERWRITE));
 		maxWidth = max(maxWidth, adjustCheckBox(IDC_CHECK_UNPROTECT));
 		maxWidth = max(maxWidth, adjustCheckBox(IDC_CHECK_DEC_WOLFX));
+		maxWidth = max(maxWidth, GetCaptionTextWidth(GetDlgItem(hWnd(), IDC_LABEL_OUTPUT_DIR)));
 
 		// Add the static width for the dialog
 		maxWidth += STATIC_WIDTH;
@@ -139,6 +213,37 @@ private:
 		updateSaveValue<bool>(IDC_CHECK_DEC_WOLFX, m_decWolfX);
 	}
 
+	void onSelectOutputDirClicked()
+	{
+		std::wstring folder;
+		if (SelectFolder(hWnd(), LOCW("select_output_dir"), folder))
+			SetDlgItemText(hWnd(), IDC_OUTPUT_DIR, folder.c_str()); // Triggers EN_CHANGE
+	}
+
+	void onOutputDirChanged()
+	{
+		wchar_t buffer[MAX_PATH * 4];
+		buffer[0] = L'\0';
+		GetDlgItemText(hWnd(), IDC_OUTPUT_DIR, buffer, static_cast<int>(std::size(buffer)));
+
+		m_outputDir = buffer;
+
+		// Trim surrounding whitespace and quotes
+		const std::wstring trimChars = L" \t\"";
+		const std::size_t first      = m_outputDir.find_first_not_of(trimChars);
+		if (first == std::wstring::npos)
+			m_outputDir.clear();
+		else
+			m_outputDir = m_outputDir.substr(first, m_outputDir.find_last_not_of(trimChars) - first + 1);
+
+		updateSaveValue<std::string>(IDC_OUTPUT_DIR, WideToUtf8(m_outputDir));
+	}
+
+	void initOutputDir()
+	{
+		SetDlgItemText(hWnd(), IDC_OUTPUT_DIR, m_outputDir.c_str());
+	}
+
 	int32_t adjustCheckBox(const int32_t& id)
 	{
 		// Get the handle of the checkbox
@@ -169,11 +274,13 @@ private:
 				SendDlgItemMessage(hWnd, IDC_CHECK_OVERWRITE, WM_SETTEXT, 0, (LPARAM)LOCW("overwrite_label"));
 				SendDlgItemMessage(hWnd, IDC_CHECK_UNPROTECT, WM_SETTEXT, 0, (LPARAM)LOCW("unprotect_label"));
 				SendDlgItemMessage(hWnd, IDC_CHECK_DEC_WOLFX, WM_SETTEXT, 0, (LPARAM)LOCW("dec_wolfx_label"));
+				SendDlgItemMessage(hWnd, IDC_LABEL_OUTPUT_DIR, WM_SETTEXT, 0, (LPARAM)LOCW("output_dir_label"));
 				SendDlgItemMessage(hWnd, IDOK, WM_SETTEXT, 0, (LPARAM)LOCW("ok"));
 				SendDlgItemMessage(hWnd, IDCANCEL, WM_SETTEXT, 0, (LPARAM)LOCW("cancel"));
 				SetWindowText(hWnd, LOCW("options"));
 
 				pWnd->SetHandle(hWnd);
+				static_cast<OptionDialog*>(pWnd)->initOutputDir();
 				pWnd->AdjustSizes();
 				return TRUE;
 		}
@@ -185,4 +292,5 @@ private:
 	bool m_overwrite = false;
 	bool m_unprotect = false;
 	bool m_decWolfX  = false;
+	std::wstring m_outputDir = L"";
 };

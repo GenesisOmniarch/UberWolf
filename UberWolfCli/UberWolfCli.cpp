@@ -79,6 +79,9 @@ int main(int argc, char* argv[])
 	bool decWolfX = false;
 	app.add_flag("-x,--wolfx", decWolfX, "Decrypt WolfX files if present");
 
+	tString outputDir = TEXT("");
+	app.add_option("-d,--output", outputDir, "Output directory for extracted files (default: next to each archive)")->type_name("DIR");
+
 	std::string packVersion = "";
 	app.add_option("-p,--pack", packVersion, buildPackInfo())->type_name("VER_IDX");
 
@@ -94,6 +97,9 @@ int main(int argc, char* argv[])
 	}
 
 	uwl.Configure(override, unprotect, decWolfX);
+
+	if (!outputDir.empty())
+		uwl.SetOutputDir(outputDir);
 
 	try
 	{

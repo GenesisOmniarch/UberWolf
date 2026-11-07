@@ -33,6 +33,9 @@
 #define IDC_COMBO_ENCRYPTION            1012
 #define IDC_LABEL_ENCRYPTION            1013
 #define IDC_CHECK_DEC_WOLFX             1014
+#define IDC_OUTPUT_DIR                  1015
+#define IDC_SELECT_OUTPUT_DIR           1016
+#define IDC_LABEL_OUTPUT_DIR            1017
 
 // Next default values for new objects
 // 
@@ -41,7 +44,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        138
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1014
+#define _APS_NEXT_CONTROL_VALUE         1018
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -91,7 +91,7 @@ bool WolfDec::IsAlreadyUnpacked(const tString& filePath) const
 {
 	const fs::path fp = fs::path(filePath);
 
-	const tString directoryPath = fp.parent_path();
+	const tString directoryPath = getOutputBaseDir(filePath);
 	const tString fileName      = fp.stem();
 	const tString outDir        = directoryPath + TEXT("/") + fileName;
 
@@ -178,7 +178,7 @@ bool WolfDec::UnpackArchive(const tString& filePath, const bool& override)
 	const fs::path fp = fs::path(filePath);
 	const tString cwd = fs::current_path();
 
-	const tString directoryPath = fp.parent_path();
+	const tString directoryPath = getOutputBaseDir(filePath);
 	const tString fileName      = fp.stem();
 
 	ConvertFullPath__(filePath.c_str(), pFullPath);
@@ -223,6 +223,9 @@ bool WolfDec::UnpackArchive(const tString& filePath, const bool& override)
 
 	const CryptMode curMode = (m_mode < DEFAULT_CRYPT_MODES.size() ? DEFAULT_CRYPT_MODES.at(m_mode) : m_additionalModes.at(m_mode - DEFAULT_CRYPT_MODES.size()));
 
+	if (!fs::exists(directoryPath))
+		fs::create_directories(directoryPath);
+
 	fs::current_path(directoryPath);
 	fs::create_directory(fileName);
 	fs::current_path(fileName);
@@ -241,6 +244,30 @@ bool WolfDec::UnpackArchive(const tString& filePath, const bool& override)
 	fs::current_path(cwd);
 
 	return !failed;
+}
+
+void WolfDec::SetOutputDir(const tString& outputDir)
+{
+	if (outputDir.empty())
+	{
+		m_outputDir = TEXT("");
+		return;
+	}
+
+	// Store an absolute path, because the current working directory is changed during unpacking
+	m_outputDir = FS_PATH_TO_TSTRING(fs::absolute(fs::path(outputDir)).lexically_normal());
+
+	// Remove a trailing separator to keep the path concatenation consistent
+	while (m_outputDir.size() > 1 && (m_outputDir.back() == TEXT('\\') || m_outputDir.back() == TEXT('/')) && m_outputDir[m_outputDir.size() - 2] != TEXT(':'))
+		m_outputDir.pop_back();
+}
+
+tString WolfDec::getOutputBaseDir(const tString& filePath) const
+{
+	if (!m_outputDir.empty())
+		return m_outputDir;
+
+	return FS_PATH_TO_TSTRING(fs::path(filePath).parent_path());
 }
 
 void WolfDec::AddAndSetKey(const std::string& name, const uint16_t& cryptVersion, const bool& useOldDxArc, const Key& key)
@@ -406,7 +433,17 @@ bool WolfDec::runProcess(const tString& filePath, const uint32_t& mode, const bo
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
 
-	const std::wstring wstr = m_progName + L" -m " + std::to_wstring(mode) + L" \"" + std::wstring(filePath) + L"\"" + (override ? L" -o" : L"");
+	std::wstring wstr = m_progName + L" -m " + std::to_wstring(mode) + L" \"" + std::wstring(filePath) + L"\"" + (override ? L" -o" : L"");
+
+	// Pass the output directory to the subprocess
+	if (!m_outputDir.empty())
+	{
+		std::wstring outDir = m_outputDir;
+		// A trailing backslash would escape the closing quote (e.g., "C:\"), so double it
+		if (outDir.back() == L'\\')
+			outDir += L'\\';
+		wstr += L" -d \"" + outDir + L"\"";
+	}
 
 	if (!CreateProcess(NULL, const_cast<LPWSTR>(wstr.c_str()), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
 	{

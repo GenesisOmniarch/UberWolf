@@ -58,5 +58,8 @@
 	"unprot_file_loc": "保護されていないファイルは,その場所で見つけることができます:{}",
 	"remove_prot": "該当ファイル保護化削除中:{}··· ",
 	"calc_prot_key_error_msg": "ERROR: Unable to calculate protection key",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "Decrypt WolfX files",
+	"output_dir_msg": "出力先: {}",
+	"output_dir_label": "出力先フォルダ（空欄 = アーカイブと同じ場所）",
+	"select_output_dir": "出力先フォルダを選択"
 }

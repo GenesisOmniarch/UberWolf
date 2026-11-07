@@ -59,5 +59,8 @@
 	"unprot_file_loc": "未保護的檔案位於：{}",
 	"remove_prot": "正在移除保護：{} ... ",
 	"calc_prot_key_error_msg": "錯誤：無法計算保護金鑰",
-	"dec_wolfx_label": "解密 WolfX 檔案"
+	"dec_wolfx_label": "解密 WolfX 檔案",
+	"output_dir_msg": "輸出目錄：{}",
+	"output_dir_label": "輸出資料夾（留空 = 與封存檔相同位置）",
+	"select_output_dir": "選擇輸出資料夾"
 }

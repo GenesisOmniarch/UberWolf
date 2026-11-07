@@ -59,5 +59,8 @@
 	"unprot_file_loc": "Unprotected files can be found in: {}",
 	"remove_prot": "Removing protection from: {} ... ",
 	"calc_prot_key_error_msg": "ERROR: Unable to calculate protection key",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "Decrypt WolfX files",
+	"output_dir_msg": "Output directory: {}",
+	"output_dir_label": "Output folder (empty = next to the archive)",
+	"select_output_dir": "Select output folder"
 }

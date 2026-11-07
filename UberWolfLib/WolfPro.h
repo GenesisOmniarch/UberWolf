@@ -56,6 +56,9 @@ public:
 		m_protKeyFile = protKeyFile;
 	}
 
+	// Set the folder the archives were extracted into (empty = data folder)
+	void SetUnpackFolder(const tString& unpackFolder);
+
 	Key GetProtectionKey();
 	Key GetDxArcKey();
 	bool RecheckProtFileState();
@@ -96,6 +99,7 @@ private:
 
 private:
 	tString m_dataFolder;
+	tString m_unpackFolder;
 	tString m_unprotectedFolder;
 	tString m_basicDataFolder;
 	tString m_protKeyFile;

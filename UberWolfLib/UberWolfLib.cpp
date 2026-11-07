@@ -65,6 +65,7 @@ UberWolfLib::UberWolfLib(const tStrings& argv) :
 	tString path      = TEXT("");
 	bool isSubProcess = IsSubProcess();
 	bool override     = false;
+	tString outputDir = TEXT("");
 
 	if (isSubProcess && argv.size() >= 3)
 	{
@@ -78,14 +79,21 @@ UberWolfLib::UberWolfLib(const tStrings& argv) :
 				mode = std::stoi(WStringToString(argv[i + 1]));
 				path = argv[i + 2];
 
-				if (argv.size() > i + 3)
-					override = (argv[i + 3] == TEXT("-o"));
+				// Optional arguments: -o (override), -d <output_dir>
+				for (std::size_t j = i + 3; j < argv.size(); j++)
+				{
+					if (argv[j] == TEXT("-o"))
+						override = true;
+					else if (argv[j] == TEXT("-d") && j + 1 < argv.size())
+						outputDir = argv[++j];
+				}
 				break;
 			}
 		}
 	}
 
 	m_wolfDec = WolfDec(argv[0], mode, isSubProcess);
+	m_wolfDec.SetOutputDir(outputDir);
 
 	if (isSubProcess)
 	{
@@ -132,9 +140,32 @@ bool UberWolfLib::InitGame(const tString& gameExePath)
 	if (!findDataFolder()) return false;
 
 	m_wolfPro = WolfPro(m_dataFolder, m_dataAsFile);
+	m_wolfPro.SetUnpackFolder(m_config.outputDir);
 
 	m_valid = true;
 	return m_valid;
+}
+
+void UberWolfLib::SetOutputDir(const tString& outputDir)
+{
+	m_wolfDec.SetOutputDir(outputDir);
+	// Use the normalized (absolute) path stored by WolfDec
+	m_config.outputDir = m_wolfDec.GetOutputDir();
+
+	if (!m_config.outputDir.empty())
+	{
+		std::error_code ec;
+		if (!fs::exists(m_config.outputDir, ec))
+			fs::create_directories(m_config.outputDir, ec);
+
+		if (ec)
+			ERROR_LOG << std::format(TEXT("UberWolfLib: Failed to create output directory: {}"), m_config.outputDir) << std::endl;
+		else
+			INFO_LOG << vFormat(LOCALIZE("output_dir_msg"), m_config.outputDir) << std::endl;
+	}
+
+	if (m_valid)
+		m_wolfPro.SetUnpackFolder(m_config.outputDir);
 }
 
 UWLExitCode UberWolfLib::PackData(const int32_t& encIdx)

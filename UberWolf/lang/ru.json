@@ -59,5 +59,8 @@
 	"unprot_file_loc": "Незащищенные файлы можно найти в: {}",
 	"remove_prot": "Снятие защиты с: {} ... ",
 	"calc_prot_key_error_msg": "ОШИБКА: Не удалось рассчитать ключ защиты.",
-	"dec_wolfx_label": "Расшифровка файлов WolfX"
+	"dec_wolfx_label": "Расшифровка файлов WolfX",
+	"output_dir_msg": "Папка вывода: {}",
+	"output_dir_label": "Папка вывода (пусто = рядом с архивом)",
+	"select_output_dir": "Выберите папку вывода"
 }

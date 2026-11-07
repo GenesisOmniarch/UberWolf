@@ -58,5 +58,8 @@
 	"unprot_file_loc": "보호되지 않은 파일은 해당 위치에서 찾을수 있습니다: {}",
 	"remove_prot": "해당 파일 보호화 제거중: {} ... ",
 	"calc_prot_key_error_msg": "ERROR: Unable to calculate protection key",
-	"dec_wolfx_label": "Decrypt WolfX files"
+	"dec_wolfx_label": "Decrypt WolfX files",
+	"output_dir_msg": "출력 폴더: {}",
+	"output_dir_label": "출력 폴더 (비워두면 아카이브와 같은 위치)",
+	"select_output_dir": "출력 폴더 선택"
 }
