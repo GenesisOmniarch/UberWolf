@@ -1,7 +1,12 @@
 name: Build and Release
 
 on:
+  # Push a change to .github/release-tag on main to publish a release with that tag
   push:
+    branches:
+      - main
+    paths:
+      - ".github/release-tag"
     tags:
       - "v*"
   workflow_dispatch:
@@ -35,7 +40,9 @@ jobs:
         shell: pwsh
         run: |
           $tag = "${{ github.event.inputs.tag }}"
-          if ([string]::IsNullOrEmpty($tag)) { $tag = "${{ github.ref_name }}" }
+          if ([string]::IsNullOrEmpty($tag) -and "${{ github.ref_type }}" -eq "tag") { $tag = "${{ github.ref_name }}" }
+          if ([string]::IsNullOrEmpty($tag)) { $tag = (Get-Content ".github/release-tag" -Raw).Trim() }
+          if ([string]::IsNullOrEmpty($tag)) { throw "No release tag specified" }
           "TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
           $out = "build\x64\Release"
